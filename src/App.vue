@@ -53,16 +53,68 @@ export default {
 </script>
 
 <style>
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #202020;
+    color: #736be2;
+  }
+  li {
+    background-color: #202020
+  }
+  input[type="text"] {
+    color: white;
+  }
+
+}
+
+@media (prefers-color-scheme: light) {
+  li {
+    background-color: #d8d8d8;
+  }
+}
+
+body {
+  margin-top: -20px;
+}
+.header {
+  margin-top: - 1.5rem;
+  margin-right: - 1.5rem;
+  margin-left: - 1.5rem;
+  margin-bottom: 0px;
+  padding:  .75rem;
+  padding-bottom: 0px;
+  font-size: 1.5rem;
+  text-align: left;
+  text-transform: uppercase;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 0px;
+  height: 500px;
+}
+ul{
+  padding-left: 10px;
+  margin-left: 0;
+  margin-top: 0;
+  list-style: none;
+  counter-reset: counter;
 }
 li{
-  list-style: square;
+  list-style: none;
   text-align: left;
+  margin: 0px;
+  padding: 10px;
+  border-bottom: 1px solid #666;
+}
+input[type="text"] {
+  font-size: 1.5rem;
+  border: 0px;
+  background-color: inherit;
+}
+input:focus {
+   outline:transparent 1px none;
 }
 </style>
