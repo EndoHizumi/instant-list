@@ -1,12 +1,14 @@
 <template>
   <div id="app">
+    <h2 class="header">{{title}}</h2>
     <ul>
       <li v-for="item in items" :key="item.id">
-        <input type="text" v-model="item.text">
-        <input type="number" v-model="item.num">
-        <button @click="addItem">+</button>
-        <button @click="removeItem(item.id)">-</button>
+        <input type="checkbox" v-model="item.check">
+        <input type="text" class="name" :class="{checked: item.check}" v-model="item.text">
+        <!-- <input type="number" v-model="item.num"> -->
+        <button class="removeBtn" @click="removeItem(item.id)">-</button>
       </li>
+      <button class="appendBtn" @click="addItem">+</button>
     </ul>
   </div>
 </template>
@@ -17,11 +19,14 @@ export default {
   name: 'App',
   data() {
     return ({
+      title: 'default',
       items: [{
+      "default":{
         id: 1,
         text: '',
-        num: 0
-      }]
+        num: 0,
+        check: false
+      }}]
     })
   },
   methods: {
@@ -29,7 +34,8 @@ export default {
       this.items.push({
         id: this.items.length +1,
         text:"",
-        num:0
+        num:0,
+        check: false
       })
     },
     removeItem(id) {
@@ -61,10 +67,9 @@ export default {
   li {
     background-color: #202020
   }
-  input[type="text"] {
+  .name{
     color: white;
   }
-
 }
 
 @media (prefers-color-scheme: light) {
@@ -109,12 +114,22 @@ li{
   padding: 10px;
   border-bottom: 1px solid #666;
 }
-input[type="text"] {
+.name {
   font-size: 1.5rem;
   border: 0px;
+  width: 90%;
   background-color: inherit;
 }
 input:focus {
    outline:transparent 1px none;
+}
+.appendBtn{
+  margin-top: 10px;
+  width: 100%;
+  height: 30px;
+}
+.checked {
+  color: gray;
+  text-decoration: line-through;
 }
 </style>
