@@ -111,10 +111,10 @@ body {
   margin-top: -10px;
 }
 .header {
+  margin-left: 10px;
   height: 45px;
 }
 .tab {
-  margin-left: 5px;
   padding-left: 10px;
   padding-right: 10px;
   font-size: 1.5rem;
@@ -124,7 +124,7 @@ body {
   border-top-right-radius: 10px;
   border-bottom: none;
   max-width: 250px;
-  height: 45px;
+  height: 44px;
   display: inline-block;
 }
 .tab>button{
