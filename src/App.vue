@@ -2,7 +2,7 @@
   <div id="app">
     <div class="header">
       <div class="tab" :class="{active: current == title}" v-for="title in Object.keys(list)" :key="title" @click="current = title">
-        <span>{{title}}</span>
+        <span :title="title">{{title}}</span>
         <button class="tab_Btn removeBtn" @click="removeCategory(title)">×</button>
       </div>
       <button class="tab_Btn appendTabBtn" @click="addCategory">+</button>
@@ -114,10 +114,7 @@ body {
   height: 45px;
 }
 .tab {
-  position: relative;
-  margin-bottom: 0px;
-  padding-top:  0.75rem;
-  padding-bottom: 0px;
+  margin-left: 5px;
   padding-left: 10px;
   padding-right: 10px;
   font-size: 1.5rem;
@@ -126,23 +123,20 @@ body {
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   border-bottom: none;
-  width: 150px;
-  height: 30px;
+  max-width: 250px;
+  height: 45px;
   display: inline-block;
 }
-.tab>span{
-  position: absolute;
-  bottom: 5px;
-  left: 10px;
-}
 .tab>button{
-  position: absolute;
-  top: 2px;
-  right: 0px;
+  margin-left: 48px;
+}
+.tab > span {
+  display: inline-block;
+  margin-bottom: 50px;
 }
 .appendTabBtn {
   position: relative;
-  bottom: 10px;
+  bottom: 0px;
   left: 10px;
 }
 .tab_Btn{
