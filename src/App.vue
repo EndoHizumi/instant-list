@@ -112,7 +112,12 @@ body {
 }
 .header {
   margin-left: 10px;
-  height: 45px;
+  max-height: 45px;
+  overflow-x: scroll;
+  white-space: nowrap
+}
+.header::-webkit-scrollbar {
+  display: none;
 }
 .tab {
   padding-left: 10px;
