@@ -1,8 +1,14 @@
 <template>
   <div id="app">
-    <h2 class="header">{{title}}</h2>
+    <div class="header">
+      <div class="tab" :class="{active: current == title}" v-for="title in Object.keys(list)" :key="title" @click="current = title">
+        <span :title="title">{{title}}</span>
+        <button class="tab_Btn removeBtn" @click="removeCategory(title)">×</button>
+      </div>
+      <button class="tab_Btn appendTabBtn" @click="addCategory">+</button>
+    </div>
     <ul>
-      <li v-for="item in items" :key="item.id">
+      <li v-for="item in list[current].items" :key="item.id">
         <input type="checkbox" v-model="item.check">
         <input type="text" class="name" :class="{checked: item.check}" v-model="item.text">
         <!-- <input type="number" v-model="item.num"> -->
@@ -19,41 +25,55 @@ export default {
   name: 'App',
   data() {
     return ({
-      title: 'default',
-      items: [{
-      "default":{
-        id: 1,
-        text: '',
-        num: 0,
-        check: false
-      }}]
+      current: 'Todo',
+      list: {
+        "Todo": {
+          items: []
+        }
+      }
     })
   },
   methods: {
-    addItem(){
-      this.items.push({
-        id: this.items.length +1,
-        text:"",
-        num:0,
+    addItem() {
+      this.list[this.current].items.push({
+        id: this.list[this.current].items.length + 1,
+        text: "taskName",
+        num: 0,
         check: false
       })
     },
     removeItem(id) {
-      this.items = this.items.filter(item => item.id != id)
+      this.list[this.current].items = this.list[this.current].items.filter(item => item.id != id)
+    },
+    addCategory() {
+      let nextName = "category" + Object.keys(this.list).length
+      this.$set(this.list, nextName, {
+        items: [{
+          id: 1,
+          text: 'taskName',
+          num: 0,
+          checked: false
+        }]
+      })
+    },
+    removeCategory(name) {
+      this.$delete(this.list, name)
+      this.current = Object.keys(this.list)[Object.keys(this.list).length - 1]
     }
   },
-  watch: {
-    items: {
-      handler: function (val) {
-          window.localStorage.setItem('instantList',JSON.stringify((val)))
-        },
-        deep: true
-    }
-  },
-  mounted () {
-    if (window.localStorage.getItem('instantList')) {
-      this.items = JSON.parse(localStorage.getItem("instantList"))
-    }
+watch: {
+  list: {
+    handler: function (val) {
+      window.localStorage.setItem('instantList', JSON.stringify((val)))
+    },
+    deep: true
+  }
+},
+mounted() {
+  const instantList = window.localStorage.getItem('instantList') || ''
+  if (instantList || instantList.length) {
+    this.list = JSON.parse(localStorage.getItem("instantList"))
+    this.current = Object.keys(this.list)[0]}
   }
 }
 </script>
@@ -63,6 +83,15 @@ export default {
   body {
     background-color: #202020;
     color: #736be2;
+  }
+  .tab {
+    background-color: rgb(46, 43, 43);
+  }
+  .active { 
+    background-color: lightgray;
+  }
+  .active > button{ 
+   color: #202020;
   }
   li {
     background-color: #202020
@@ -79,25 +108,48 @@ export default {
 }
 
 body {
-  margin-top: -20px;
+  margin-top: -10px;
 }
 .header {
-  margin-top: - 1.5rem;
-  margin-right: - 1.5rem;
-  margin-left: - 1.5rem;
-  margin-bottom: 0px;
-  padding:  .75rem;
-  padding-bottom: 0px;
+  margin-left: 10px;
+  height: 45px;
+}
+.tab {
+  padding-left: 10px;
+  padding-right: 10px;
   font-size: 1.5rem;
-  text-align: left;
   text-transform: uppercase;
+  border: gray 1px solid;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom: none;
+  max-width: 250px;
+  height: 44px;
+  display: inline-block;
+}
+.tab>button{
+  margin-left: 48px;
+}
+.tab > span {
+  display: inline-block;
+  margin-bottom: 50px;
+}
+.appendTabBtn {
+  position: relative;
+  bottom: 0px;
+  left: 10px;
+}
+.tab_Btn{
+  background: transparent;
+  border-style: none;
+  color: lightGray;
+  font-size: xx-large;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  margin-top: 0px;
+  margin-top: 20px;
   height: 500px;
 }
 ul{
@@ -105,20 +157,28 @@ ul{
   margin-left: 0;
   margin-top: 0;
   list-style: none;
-  counter-reset: counter;
+  border: gray 1px solid;
+  border-radius: 10px;
+  padding-bottom: 10px;
+  padding-right: 10px;
 }
 li{
+  display: grid;
+  grid-template-columns: 0.1fr 2fr 0.1fr;
   list-style: none;
   text-align: left;
   margin: 0px;
-  padding: 10px;
+  padding: 10px 10px;
   border-bottom: 1px solid #666;
 }
 .name {
   font-size: 1.5rem;
   border: 0px;
-  width: 90%;
   background-color: inherit;
+}
+input[type="checkbox"]{
+  width: 20px;
+  height: 24px;
 }
 input:focus {
    outline:transparent 1px none;
@@ -131,5 +191,9 @@ input:focus {
 .checked {
   color: gray;
   text-decoration: line-through;
+}
+.removeBtn {
+  width: 30px;
+  height: 30px;
 }
 </style>
