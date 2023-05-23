@@ -1,18 +1,22 @@
 <template>
   <div id="app">
     <div class="header">
-      <div class="tab" :class="{active: current == title}" v-for="title in Object.keys(list)" :key="title" @click="current = title">
+      <div class="tab" :class="{active: current == title}" v-for="title in Object.keys(list)" :key="title" @click="current = title" @dblclick="categoryNameEdit=true">
+        <div v-if="categoryNameEdit" class="tab_input">
+          <input type="text" :value="title">
+        </div>
         <span :title="title">{{title}}</span>
-        <button class="tab_Btn removeBtn" @click="removeCategory(title)">×</button>
+        <button class="tabBtn removeBtn" @click="removeCategory(title)">×</button>
       </div>
-      <button class="tab_Btn appendTabBtn" @click="addCategory">+</button>
+      <button class="tabBtn appendTabBtn" @click="addCategory">+</button>
     </div>
     <ul>
       <li v-for="item in list[current].items" :key="item.id">
-        <input type="checkbox" v-model="item.check">
+        <input type="checkbox" class="status" v-model="item.check">
         <input type="text" class="name" :class="{checked: item.check}" v-model="item.text">
         <!-- <input type="number" v-model="item.num"> -->
-        <button class="removeBtn" @click="removeItem(item.id)">-</button>
+        <div class="toggle removeBtn"></div>
+        <!-- <button class="removeBtn" @click="removeItem(item.id)">-</button> -->
       </li>
       <button class="appendBtn" @click="addItem">+</button>
     </ul>
@@ -30,7 +34,8 @@ export default {
         "Todo": {
           items: []
         }
-      }
+      },
+      categoryNameEdit: false
     })
   },
   methods: {
@@ -57,8 +62,12 @@ export default {
       })
     },
     removeCategory(name) {
-      this.$delete(this.list, name)
-      this.current = Object.keys(this.list)[Object.keys(this.list).length - 1]
+      if (this.categoryNameEdit){
+        this.categoryNameEdit = false
+      } else {
+        this.$delete(this.list, name)
+        this.current = Object.keys(this.list)[Object.keys(this.list).length - 1]
+      }
     }
   },
 watch: {
@@ -93,6 +102,9 @@ mounted() {
   .active > button{ 
    color: #202020;
   }
+  .tab_input > button {
+    color: #202020;
+  }
   li {
     background-color: #202020
   }
@@ -107,6 +119,19 @@ mounted() {
   }
 }
 
+.toggle {
+  display: inline-block;
+  content:"";
+	width: 6px;
+	height: 6px;
+	border-top: 2px solid #fff;
+	border-right: 2px solid #fff;
+	-webkit-transform: rotate(45deg);
+	position: relative;
+	top:calc( 50% - 3px );
+	right: 20px;
+	transform: rotate(135deg);
+}
 body {
   margin-top: -10px;
 }
@@ -120,6 +145,7 @@ body {
   display: none;
 }
 .tab {
+  position: relative;
   padding-left: 10px;
   padding-right: 10px;
   font-size: 1.5rem;
@@ -135,21 +161,36 @@ body {
 .tab>button{
   margin-left: 48px;
 }
-.tab > span {
-  display: inline-block;
-  margin-bottom: 50px;
+
+.tab_input{
+  position: absolute;;
+  background-color: inherit;
+  margin-top: 5px;
+  width: 120px;
 }
+
+.tab_input > input {
+  width: 100%;
+  border: 0px;
+  font-size: 1.5rem;
+  background-color: inherit;
+  color: inherit;
+  text-transform: uppercase;
+}
+
 .appendTabBtn {
   position: relative;
   bottom: 0px;
   left: 10px;
 }
-.tab_Btn{
+
+.tabBtn{
   background: transparent;
   border-style: none;
   color: lightGray;
   font-size: xx-large;
 }
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -157,6 +198,7 @@ body {
   margin-top: 20px;
   height: 500px;
 }
+
 ul{
   padding-left: 10px;
   margin-left: 0;
@@ -167,23 +209,26 @@ ul{
   padding-bottom: 10px;
   padding-right: 10px;
 }
+
 li{
-  display: grid;
-  grid-template-columns: 0.1fr 2fr 0.1fr;
+  position: relative;
   list-style: none;
   text-align: left;
   margin: 0px;
   padding: 10px 10px;
   border-bottom: 1px solid #666;
 }
+
 .name {
   font-size: 1.5rem;
   border: 0px;
   background-color: inherit;
+  width: 90%;
 }
 input[type="checkbox"]{
   width: 20px;
   height: 24px;
+  width: 5%;
 }
 input:focus {
    outline:transparent 1px none;
@@ -201,4 +246,5 @@ input:focus {
   width: 30px;
   height: 30px;
 }
+
 </style>
