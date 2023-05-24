@@ -1,17 +1,17 @@
 <template>
   <div id="app">
     <div class="header">
-      <div class="tab" :class="{active: current == title}" v-for="title in Object.keys(list)" :key="title" @click="current = title" @dblclick="categoryNameEdit=true">
+      <div class="tab" :class="{active: current == title.id}" v-for="title in categories" :key="title.id" @click="load(title.id)" @dblclick="categoryNameEdit=true">
         <div v-if="categoryNameEdit" class="tab_input">
-          <input type="text" :value="title">
+          <input type="text" v-model="title.name" @blur="categoryNameEdit=false">
         </div>
-        <span :title="title">{{title}}</span>
-        <button class="tabBtn removeBtn" @click="removeCategory(title)">×</button>
+        <span>{{title.name}}</span>
+        <button class="tabBtn removeBtn" @click="removeCategory(title.id)">×</button>
       </div>
       <button class="tabBtn appendTabBtn" @click="addCategory">+</button>
     </div>
     <ul>
-      <li v-for="item in list[current].items" :key="item.id">
+      <li v-for="item in items" :key="item.id">
         <input type="checkbox" class="status" v-model="item.check">
         <input type="text" class="name" :class="{checked: item.check}" v-model="item.text">
         <!-- <input type="number" v-model="item.num"> -->
@@ -29,61 +29,94 @@ export default {
   name: 'App',
   data() {
     return ({
-      current: 'Todo',
-      list: {
-        "Todo": {
-          items: []
-        }
-      },
+      current: '',
+      items:[],
+      categories:[],
       categoryNameEdit: false
     })
   },
   methods: {
+    load(id) {
+      this.items = JSON.parse(localStorage.getItem(id))
+      this.current = id
+    },
     addItem() {
-      this.list[this.current].items.push({
-        id: this.list[this.current].items.length + 1,
+      this.items.push({
+        id: crypto.randomUUID(),
         text: "taskName",
         num: 0,
         check: false
       })
+      localStorage.setItem(this.current, JSON.stringify(this.items))
     },
     removeItem(id) {
-      this.list[this.current].items = this.list[this.current].items.filter(item => item.id != id)
+      this.items = this.items.filter(item => item.id != id)
     },
     addCategory() {
-      let nextName = "category" + Object.keys(this.list).length
-      this.$set(this.list, nextName, {
-        items: [{
-          id: 1,
+      let nextName = "category" + this.categories.length
+      let categoryId = crypto.randomUUID()
+      this.categories.push ({
+        id: categoryId,
+        name: nextName
+      })
+      this.current = categoryId
+      this.items=[{
+          id: crypto.randomUUID(),
           text: 'taskName',
           num: 0,
           checked: false
-        }]
-      })
+      }]
     },
-    removeCategory(name) {
+    removeCategory(id) {
       if (this.categoryNameEdit){
         this.categoryNameEdit = false
       } else {
-        this.$delete(this.list, name)
-        this.current = Object.keys(this.list)[Object.keys(this.list).length - 1]
+        if (this.categories.length > 1) {
+          this.categories = this.categories.filter(item => item.id != id)
+        }
       }
+    },
+    confirmEdit (id, event){
+      console.log(id)
+      console.log(event)
+      const target = this.categories.filter(item => item.id == id)
+      target.name = event.target.value
     }
   },
-watch: {
-  list: {
-    handler: function (val) {
-      window.localStorage.setItem('instantList', JSON.stringify((val)))
+  mounted() {
+    const currentId = window.localStorage.getItem('current') || ''
+    if (currentId || currentId.length) {
+      this.categories = JSON.parse(localStorage.getItem('categories'))
+      this.current = this.categories[0].id
+      this.items = JSON.parse(localStorage.getItem(this.current))
+    } else {
+      this.categories.push({id: crypto.randomUUID(), name:'todo'})
+      this.current = this.categories[0].id
+      this.items.push({
+          id: crypto.randomUUID(),
+          text: "taskName",
+          num: 0,
+          check: false
+      })
+    }
+  },
+  watch: {
+    current: function () {
+        localStorage.setItem('current', this.current)
     },
-    deep: true
-  }
-},
-mounted() {
-  const instantList = window.localStorage.getItem('instantList') || ''
-  if (instantList || instantList.length) {
-    this.list = JSON.parse(localStorage.getItem("instantList"))
-    this.current = Object.keys(this.list)[0]}
-  }
+    items: {
+      handler: function (val) {
+        localStorage.setItem(this.current, JSON.stringify(val))
+      },
+      deep: true
+    },
+    categories: {
+      handler: function () {
+        localStorage.setItem('categories', JSON.stringify(this.categories))
+      },
+      deep: true
+    },
+  },
 }
 </script>
 
