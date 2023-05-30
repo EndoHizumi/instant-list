@@ -1,11 +1,8 @@
 <template>
   <div id="app">
     <div class="header">
-      <div class="tab" :class="{active: current == title.id}" v-for="title in categories" :key="title.id" @click="load(title.id)" @dblclick="categoryNameEdit=true">
-        <div v-if="categoryNameEdit" class="tab_input">
-          <input type="text" v-model="title.name" @blur="categoryNameEdit=false">
-        </div>
-        <span>{{title.name}}</span>
+      <div class="tab" :class="{active: current == title.id}" v-for="title in categories" :key="title.id" @click="load(title.id)">
+        <input class="tab_name" type="text" v-model="title.name" @blur="confirmEdit(title.id, $event)">
         <button class="tabBtn removeBtn" @click="removeCategory(title.id)">×</button>
       </div>
       <button class="tabBtn appendTabBtn" @click="addCategory">+</button>
@@ -77,8 +74,6 @@ export default {
       }
     },
     confirmEdit (id, event){
-      console.log(id)
-      console.log(event)
       const target = this.categories.filter(item => item.id == id)
       target.name = event.target.value
     }
@@ -170,7 +165,7 @@ body {
 }
 .header {
   margin-left: 10px;
-  max-height: 45px;
+  height: 66px;
   overflow-x: scroll;
   white-space: nowrap
 }
@@ -188,7 +183,7 @@ body {
   border-top-right-radius: 10px;
   border-bottom: none;
   max-width: 250px;
-  height: 44px;
+  height: 50px;
   display: inline-block;
 }
 .tab>button{
@@ -202,8 +197,9 @@ body {
   width: 120px;
 }
 
-.tab_input > input {
+.tab_name {
   width: 100%;
+  height: 90%;
   border: 0px;
   font-size: 1.5rem;
   background-color: inherit;
@@ -235,7 +231,7 @@ body {
 ul{
   padding-left: 10px;
   margin-left: 0;
-  margin-top: 0;
+  margin-top: -14px;
   list-style: none;
   border: gray 1px solid;
   border-radius: 10px;
