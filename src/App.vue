@@ -17,12 +17,19 @@
       <button class="tabBtn appendTabBtn" @click="addCategory">+</button>
     </div>
     <ul>
-      <li v-for="item in filteredItems" :key="item.id">
+      <li v-for="item in filteredItems(items)" :key="item.id">
         <input type="checkbox" class="status" v-model="item.check">
         <input type="text" class="name" :class="{checked: item.check}" v-model="item.text">
         <!-- <input type="number" v-model="item.num"> -->
         <!-- <div class="toggle removeBtn"></div> -->
-        <!-- <button class="removeBtn" @click="removeItem(item.id)">-</button> -->
+        <!-- <button class="removeBtn" @click="">+</button> -->
+        <ul class="childList" v-if="item.children">
+          <li v-for="childItem in filteredItems(item.children)" class="childItem" :key="childItem.id">
+            <input type="checkbox" class="status" v-model="childItem.check">
+            <input type="text" class="name" :class="{checked: childItem.check}" v-model="childItem.text">
+          </li>
+          <button class="appendBtn" @click="addItem($event, item.id)">+</button>
+        </ul>
       </li>
       <button class="appendBtn" @click="addItem">+</button>
     </ul>
@@ -43,24 +50,25 @@ export default {
       isInvisibleDoneTask: false
     })
   },
-  computed: {
-    filteredItems() {
-      if (!this.isInvisibleDoneTask || this.items == null){ return this.items}
-      return this.items.filter(item => !item.check)
-    }
-  },
   methods: {
     load(id) {
       this.items = JSON.parse(localStorage.getItem(id))
       this.current = id
     },
-    addItem() {
+    addItem(e, id) {
+      const targetItem = this.items.filter(item => item.id == id)[0]
+      let items = id !== undefined ? targetItem?.children : this.items
       const crypto = require('crypto');
-      this.items.push({
+      if(items === undefined){
+        Object.assign(targetItem, {children: []})
+        items = targetItem.children
+      }
+      items.push({
         id: crypto.randomBytes(20).toString('hex'),
         text: "taskName",
         num: 0,
-        check: false
+        check: false,
+        children: []
       })
       localStorage.setItem(this.current, JSON.stringify(this.items))
     },
@@ -135,7 +143,11 @@ export default {
       this.categories.push(JSON.parse(localStorage.getItem('categories')))
       this.current = this.categories[0].id
       this.items.push(JSON.parse(localStorage.getItem(this.current)))
-    }
+    },
+    filteredItems(items) {
+      if (!this.isInvisibleDoneTask || items == null){ return items}
+      return items.filter(item => !item.check)
+    },
   },
   mounted() {
     const crypto = require('crypto');
@@ -151,7 +163,8 @@ export default {
           id: crypto.randomBytes(20).toString('hex'),
           text: "taskName",
           num: 0,
-          check: false
+          check: false,
+          children:[]
       })
     }
   },
@@ -206,7 +219,13 @@ export default {
     background-color: #d8d8d8;
   }
 }
-
+.childList {
+  border: none;
+  margin-top: 5px;
+}
+.childItem {
+  margin-left: 25px;
+}
 .toggle {
   display: inline-block;
   content:"";
