@@ -20,10 +20,9 @@
       <li v-for="item in filteredItems(items)" :key="item.id">
         <input type="checkbox" class="status" v-model="item.check">
         <input type="text" class="name" :class="{checked: item.check}" v-model="item.text">
-        <!-- <input type="number" v-model="item.num"> -->
-        <!-- <div class="toggle removeBtn"></div> -->
-        <!-- <button class="removeBtn" @click="">+</button> -->
-        <ul class="childList" v-if="item.children">
+        <input type="checkbox" :id="`expandToggle${item.id}`" class="expandToggle">
+        <label :for="`expandToggle${item.id}`" class="toggle"></label>
+        <ul class="childList">
           <li v-for="childItem in filteredItems(item.children)" class="childItem" :key="childItem.id">
             <input type="checkbox" class="status" v-model="childItem.check">
             <input type="text" class="name" :class="{checked: childItem.check}" v-model="childItem.text">
@@ -145,7 +144,7 @@ export default {
       this.items.push(JSON.parse(localStorage.getItem(this.current)))
     },
     filteredItems(items) {
-      if (!this.isInvisibleDoneTask || items == null){ return items}
+      if (!this.isInvisibleDoneTask || items == null || items == undefined){ return items}
       return items.filter(item => !item.check)
     },
   },
@@ -222,6 +221,32 @@ export default {
 .childList {
   border: none;
   margin-top: 5px;
+  height: 0;
+  width: 0;
+  visibility: hidden;
+}
+.expandToggle {
+  display: none;
+}
+.expandToggle:checked + .toggle {
+  display: inline-block;
+  content:"";
+	width: 25px;
+	height: 25px;
+	border-top: 2px solid #fff;
+	border-right: 2px solid #fff;
+	-webkit-transform: rotate(45deg);
+	position: relative;
+	top: 40%;
+	right: 20px;
+  transform: rotate(135deg);
+}
+.expandToggle:checked + .toggle + .childList {
+  border: none;
+  margin-top: 5px;
+  height: auto;
+  width: auto;
+  visibility: visible;
 }
 .childItem {
   margin-left: 25px;
@@ -229,15 +254,15 @@ export default {
 .toggle {
   display: inline-block;
   content:"";
-	width: 6px;
-	height: 6px;
+	width: 25px;
+	height: 25px;
 	border-top: 2px solid #fff;
 	border-right: 2px solid #fff;
 	-webkit-transform: rotate(45deg);
 	position: relative;
-	top:calc( 50% - 3px );
+	top: 40%;
 	right: 20px;
-	transform: rotate(135deg);
+	transform: rotate(-45deg);
 }
 body {
   margin-top: -10px;
